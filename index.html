@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HONO Lead Capture</title>
+<meta name="theme-color" content="#360B62">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<style>
+/* Layout: one-column mobile tool — sticky event bar, two tabs (Capture / Leads), big thumb-sized controls */
+:root{
+  --bg:#F6F4FA; --surface:#FFFFFF; --ink:#222222; --muted:#5F5873; --line:#E1D9F0;
+  --accent:#4B2E83; --accent-ink:#FFFFFF; --accent-soft:#F0EAFA; --magenta:#C0398A; --brand-word:#360B62;
+  --hot:#C8331B; --hot-soft:#FBE4DF; --warm:#B26A00; --warm-soft:#FBEFD9; --cold:#3B6E8F; --cold-soft:#E1EEF5;
+  --ok:#1E7A4C; --ok-soft:#DDF2E6;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14101E; --surface:#1E1830; --ink:#EEEAF6; --muted:#A79FBD; --line:#352C4D;
+  --accent:#B89CF0; --accent-ink:#1A1030; --accent-soft:#2D2348; --magenta:#E77BBF; --brand-word:#DCCDF7;
+  --hot:#FF8A73; --hot-soft:#3A1E1A; --warm:#F2B455; --warm-soft:#36290F; --cold:#8CC4E6; --cold-soft:#15303F;
+  --ok:#6FD39E; --ok-soft:#12321F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14101E; --surface:#1E1830; --ink:#EEEAF6; --muted:#A79FBD; --line:#352C4D;
+  --accent:#B89CF0; --accent-ink:#1A1030; --accent-soft:#2D2348; --magenta:#E77BBF; --brand-word:#DCCDF7;
+  --hot:#FF8A73; --hot-soft:#3A1E1A; --warm:#F2B455; --warm-soft:#36290F; --cold:#8CC4E6; --cold-soft:#15303F;
+  --ok:#6FD39E; --ok-soft:#12321F; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header .wrap{padding-block:12px 0}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;min-width:0}.logo .mark{display:block;color:var(--brand-word);flex:none}.logo .app{font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;padding-left:8px;border-left:1px solid var(--line)}
+.grad{height:3px;margin-top:10px;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--magenta))}
+.who{font:500 12px var(--f-mono);color:var(--muted);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eventrow{display:flex;gap:8px;align-items:center;margin-top:10px}
+.eventrow label{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.eventrow input{flex:1;min-width:0}
+.tabs{display:grid;grid-template-columns:1fr 1fr;margin-top:10px}
+.tab{appearance:none;background:none;border:0;border-bottom:3px solid transparent;padding:10px 0 9px;font:600 15px var(--f-body);color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
+.tab .n{font:500 12px var(--f-mono);margin-left:6px;padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+section.panel{display:flex;flex-direction:column;gap:14px;padding-top:16px}
+.scan{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r);padding:12px 14px;font:600 15px var(--f-body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;text-align:center}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.big{min-height:64px;flex-direction:column;gap:2px}
+.btn.big small{font:500 12px var(--f-body);color:var(--muted)}
+.btn.primary small{color:var(--accent-ink);opacity:.85}
+.btn.danger{color:var(--hot);border-color:var(--hot)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.chip:focus-visible,.lead:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{font-size:13px;padding:10px 12px;border-radius:var(--r);background:var(--accent-soft);color:var(--ink)}
+.status.err{background:var(--hot-soft)}
+.status.ok{background:var(--ok-soft)}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+legend{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f > label{font-size:13px;font-weight:500;color:var(--muted)}
+input,select,textarea{width:100%;font:16px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:44px}
+textarea{min-height:84px;resize:vertical}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:8px 13px;font:500 14px var(--f-body);cursor:pointer;min-height:38px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#interests .chip:first-child{border-color:var(--magenta);font-weight:600}
+#interests .chip:first-child[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.temp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.temp .chip{border-radius:8px}
+.temp .chip[data-v="Hot"][aria-pressed="true"]{background:var(--hot);border-color:var(--hot)}
+.temp .chip[data-v="Warm"][aria-pressed="true"]{background:var(--warm);border-color:var(--warm)}
+.temp .chip[data-v="Cold"][aria-pressed="true"]{background:var(--cold);border-color:var(--cold)}
+.dup{font-size:13px;color:var(--warm)}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-top:10px}
+.savebar .wrap{padding-block:0;display:flex;gap:10px}
+.savebar .btn{flex:1}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools input{flex:1 1 180px;min-width:0}
+.tools select{flex:0 1 auto;width:auto}
+.summary{display:flex;gap:8px;flex-wrap:wrap;font:500 13px var(--f-mono);color:var(--muted)}
+.summary b{color:var(--ink);font-weight:500}
+.list{display:flex;flex-direction:column;gap:8px}
+.lead{display:grid;grid-template-columns:6px 1fr auto;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 12px 0;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;overflow:hidden}
+.lead .stripe{align-self:stretch;margin:-12px 0;background:var(--line)}
+.lead[data-t="Hot"] .stripe{background:var(--hot)} .lead[data-t="Warm"] .stripe{background:var(--warm)} .lead[data-t="Cold"] .stripe{background:var(--cold)}
+.lead .main{min-width:0}
+.lead .nm{font-weight:600}
+.lead .co{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lead .meta{font:500 12px var(--f-mono);color:var(--muted);margin-top:4px}
+.lead .when{font:500 12px var(--f-mono);text-align:right;color:var(--muted);white-space:nowrap}
+.lead .when b{display:block;color:var(--ink);font-weight:500}
+.pill{display:inline-block;font:500 11px var(--f-mono);padding:2px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent);margin-right:4px}
+.empty{text-align:center;color:var(--muted);padding:32px 12px;border:1px dashed var(--line);border-radius:var(--r)}
+.empty strong{display:block;color:var(--ink);font:700 18px var(--f-display);margin-bottom:4px}
+.editing{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;background:var(--warm-soft);padding:8px 12px;border-radius:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:20;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:500;font-size:14px;max-width:calc(100% - 32px)}
+.note{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.btn,.chip{transition:background .12s,border-color .12s}}
+.pending{color:var(--warm);font:500 12px var(--f-mono)}
+.okmark{color:var(--ok);font:500 12px var(--f-mono)}
+</style>
+</head><body>
+<header>
+  <div class="wrap">
+    <div class="brand"><div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 261 41" width="112" height="18" class="mark" fill="none" role="img" aria-label="HONO"><g fill="currentColor"><path d="M76.82 13.58H64.558V.133h-12.18v40.015h12.18V26.784H76.82v13.364h12.187V.133H76.82V13.58zm42.722 15.957a10.59 10.59 0 0 1-3.687-.651c-1.043-.485-2.004-1.053-2.726-1.864-.805-.811-1.364-1.78-1.766-2.917s-.641-2.432-.641-3.811.239-2.674.641-3.811 1.043-2.106 1.766-2.917 1.683-1.454 2.726-1.864c1.043-.485 2.324-.652 3.687-.652a10.59 10.59 0 0 1 3.688.652c1.043.485 2.004 1.053 2.726 1.864s1.363 1.78 1.766 2.917.64 2.432.64 3.811-.238 2.674-.64 3.811-1.043 2.106-1.766 2.917-1.683 1.455-2.726 1.864a10.77 10.77 0 0 1-3.688.651zm14.511-23.894c-1.839-1.78-4.007-3.076-6.495-4.053-2.488-.894-5.133-1.379-8.016-1.379s-5.609.485-8.097 1.379-4.648 2.265-6.496 4.053c-1.84 1.78-3.285 3.886-4.246 6.402-1.043 2.432-1.519 5.265-1.519 8.265s.484 5.75 1.519 8.265a19.97 19.97 0 0 0 4.246 6.402c1.84 1.78 4.008 3.076 6.496 4.053 2.488.894 5.133 1.379 8.015 1.379s5.61-.485 8.016-1.379c2.488-.97 4.648-2.265 6.496-4.053 1.839-1.78 3.285-3.886 4.246-6.402 1.042-2.432 1.519-5.265 1.519-8.265s-.484-5.75-1.519-8.265c-.879-2.508-2.325-4.614-4.172-6.402h.007zM174.45 20.3L162.263.133h-12.261v40.015h12.261V20.3l12.262 19.849h12.105V.133h-12.18V20.3zm42.641 9.161c-1.363 0-2.562-.242-3.605-.651-1.043-.485-2.004-1.053-2.727-1.864s-1.363-1.78-1.765-2.833a11.47 11.47 0 0 1-.641-3.811 10.970 10.970 0 0 1 .641-3.727c.402-1.136.961-2.106 1.765-2.917.723-.811 1.684-1.454 2.727-1.864 1.043-.485 2.324-.652 3.605-.652 1.363 0 2.563.242 3.606.652 1.042.485 2.003 1.053 2.726 1.864s1.363 1.78 1.765 2.917.641 2.432.641 3.727c0 1.379-.238 2.674-.641 3.811s-.961 2.106-1.765 2.833c-.723.811-1.684 1.455-2.726 1.864-1.043.485-2.325.651-3.606.651zm18.757-17.417a19.97 19.97 0 0 0-4.246-6.402c-1.84-1.780-4.007-3.076-6.496-4.053C222.618.695 219.899.21 217.009.21s-5.609.485-8.097 1.379c-2.488.97-4.648 2.265-6.496 4.053-1.84 1.78-3.285 3.886-4.246 6.402-1.043 2.432-1.52 5.265-1.52 8.265s.485 5.75 1.52 8.265a19.97 19.97 0 0 0 4.246 6.402c1.84 1.78 4.008 3.076 6.496 4.053 2.488.894 5.207 1.379 8.097 1.379s5.609-.485 8.097-1.379c2.489-.97 4.649-2.265 6.496-4.053s3.285-3.886 4.246-6.402c1.043-2.432 1.52-5.265 1.52-8.265s-.484-5.833-1.52-8.265z"/></g><g fill="#78c8a1"><path d="M259.887 27.109h-12.18v13.288h12.18V27.109zm-219.873-.32H26.926V40.1h13.088V26.789z"/></g><g fill="#f17fa8"><path d="M40.014.172H26.926v13.311h13.088V.172zM13.836 26.789H.748V40.1h13.088V26.789z"/></g><path d="M13.836 13.484H.748v13.311h13.088V13.484z" fill="#ffc20e"/><path d="M13.836.172H.748v13.311h13.088V.172z" fill="#1fc1f2"/></svg><span class="app">Lead Capture</span></div><div class="who" id="netState"></div></div>
+    <div class="grad"></div>
+    <div class="eventrow"><label for="eventName">Event</label><input id="eventName" value="PMAP Tech HR 2026" autocomplete="off"></div>
+    <div class="eventrow"><label for="myName">Your name</label><input id="myName" placeholder="Type your name once" autocomplete="name"></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabCapture" aria-selected="true">Capture</button>
+      <button class="tab" role="tab" id="tabLeads" aria-selected="false">My leads<span class="n" id="countBadge">0</span></button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+<section class="panel" id="panelCapture">
+    
+    <div class="scan">
+      <label class="btn primary big" for="cardCam">Scan name card<small>Take a photo</small></label>
+      <label class="btn big" for="cardFile">Upload card photo<small>From gallery</small></label>
+      <input type="file" id="cardCam" accept="image/*" capture="environment" hidden>
+      <input type="file" id="cardFile" accept="image/*" hidden>
+    </div>
+    <div class="status" id="scanStatus" hidden></div>
+
+    <div class="card"><fieldset>
+      <legend>Contact</legend>
+      <div class="grid2">
+        <div class="f"><label for="name">Full name *</label><input id="name" autocomplete="off"></div>
+        <div class="f"><label for="title">Job title</label><input id="title" autocomplete="off"></div>
+      </div>
+      <div class="f"><label for="company">Company *</label><input id="company" autocomplete="off"></div>
+      <div class="grid2">
+        <div class="f"><label for="email">Email</label><input id="email" type="email" inputmode="email" autocomplete="off"></div>
+        <div class="f"><label for="phone">Mobile / phone</label><input id="phone" type="tel" inputmode="tel" autocomplete="off"></div>
+      </div>
+      <div class="dup" id="dupNote" hidden></div>
+      <div class="grid2">
+        <div class="f"><label for="linkedin">LinkedIn / website</label><input id="linkedin" autocomplete="off"></div>
+        <div class="f"><label for="country">Country</label>
+          <select id="country"><option value="">Select</option><option>Philippines</option><option>Thailand</option><option>Indonesia</option><option>Malaysia</option><option>Singapore</option><option>Vietnam</option><option>India</option><option>Other</option></select></div>
+      </div>
+    </fieldset></div>
+
+    <div class="card"><fieldset>
+      <legend>Company profile</legend>
+      <div class="grid2">
+        <div class="f"><label for="industry">Industry</label>
+          <select id="industry"><option value="">Select</option><option>BFSI</option><option>Retail / F&amp;B</option><option>Manufacturing</option><option>BPO / Shared Services</option><option>Conglomerate</option><option>Healthcare</option><option>Logistics</option><option>Tech / IT</option><option>Education</option><option>Government / GLC</option><option>Other</option></select></div>
+        <div class="f"><label for="headcount">Employees</label>
+          <select id="headcount"><option value="">Select</option><option>&lt;500</option><option>500–1,000</option><option>1,000–5,000</option><option>5,000–20,000</option><option>20,000+</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="f"><label for="currentSystem">Current HRMS / payroll</label><input id="currentSystem" placeholder="e.g. in-house, Excel, other vendor" autocomplete="off"></div>
+        <div class="f"><label for="role">Their role in decision</label>
+          <select id="role"><option value="">Select</option><option>Decision maker</option><option>Influencer</option><option>Evaluator / user</option><option>Unknown</option></select></div>
+      </div>
+    </fieldset></div>
+
+    <div class="card"><fieldset>
+      <legend>Interest</legend>
+      <div class="chips" id="interests"></div>
+      <div class="f"><label for="otherModules">Other modules / requirements</label><input id="otherModules" placeholder="Type anything not listed, e.g. canteen, uniform, union dues" autocomplete="off"></div>
+      <div class="f"><label>Lead temperature</label><div class="temp" id="temp"></div></div>
+    </fieldset></div>
+
+    <div class="card"><fieldset>
+      <legend>Next step</legend>
+      <div class="grid2">
+        <div class="f"><label for="nextStep">Action</label>
+          <select id="nextStep"><option value="">Select</option><option>Product demo</option><option>Discovery meeting</option><option>Send proposal</option><option>Call back</option><option>Send brochure</option><option>Nurture / newsletter</option></select></div>
+        <div class="f"><label for="nextDate">Next meeting date</label><input id="nextDate" type="date"></div>
+      </div>
+      <div class="chips" id="quickDates"></div>
+      <div class="grid2">
+        <div class="f"><label for="nextTime">Time (optional)</label><input id="nextTime" type="time"></div>
+        <div class="f"><label for="timeline">Buying timeline</label>
+          <select id="timeline"><option value="">Select</option><option>0–3 months</option><option>3–6 months</option><option>6–12 months</option><option>12+ months</option><option>Just exploring</option></select></div>
+      </div>
+      <div class="f"><label for="notes">Notes from conversation</label><textarea id="notes" placeholder="Pain points, budget, who else to involve…"></textarea></div>
+    </fieldset></div>
+    <div class="status err" id="saveErr" hidden></div>
+    
+  </section>
+  <section class="panel" id="panelLeads" hidden>
+    <div class="summary" id="summary"></div>
+    <div class="status" id="retryBox" hidden><span id="retryText"></span> <button class="btn" id="retryBtn" style="min-height:34px;padding:4px 12px;display:inline-flex;margin-left:8px">Send now</button></div>
+    <div class="list" id="list"></div>
+    <p class="note">This list shows leads saved from this phone. The full team list is in Airtable.</p>
+  </section>
+</main>
+<div class="savebar" id="savebar"><div class="wrap">
+  <button class="btn" id="clearBtn">Clear</button>
+  <button class="btn primary" id="saveBtn" style="flex:2">Save lead</button>
+</div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+const SCAN_URL="https://hook.us2.make.com/qo7eyww8yc6novm6txcemxyij71fcmwr";
+const SAVE_URL="https://hook.us2.make.com/mwgcx43z1f12or26z5xwwqnaooxg1gx3";
+const FULL="Full suite (all modules)";
+const INTERESTS=[FULL,"Core HR","Payroll","Attendance & Time","Leave","Shift rostering","Performance","Compensation & benefits","Recruitment","Onboarding","Exit / separation","Employee self-service app","AI HR assistant","HR helpdesk","Analytics & reports","Statutory compliance","Learning","Engagement & surveys","Expense / claims","Travel"];
+const TEMPS=["Hot","Warm","Cold"];
+const FIELDS=["name","title","company","email","phone","linkedin","country","industry","headcount","currentSystem","role","nextStep","nextDate","nextTime","timeline","notes","otherModules"];
+const $=id=>document.getElementById(id);
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let sel={interests:new Set(),temp:""};let scanned=false;
+let mine=ls.get("hono_mine",[]);let queue=ls.get("hono_queue",[]);
+
+$("eventName").value=ls.get("hono_event","PMAP Tech HR 2026");
+$("myName").value=ls.get("hono_me","");
+$("eventName").addEventListener("input",e=>ls.set("hono_event",e.target.value.trim()));
+$("myName").addEventListener("input",e=>ls.set("hono_me",e.target.value.trim()));
+
+function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2400)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+INTERESTS.forEach(v=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=v;b.setAttribute("aria-pressed","false");b.onclick=()=>{sel.interests.has(v)?sel.interests.delete(v):sel.interests.add(v);syncChips()};$("interests").appendChild(b)});
+TEMPS.forEach(v=>{const b=document.createElement("button");b.type="button";b.className="chip";b.dataset.v=v;b.textContent=v;b.setAttribute("aria-pressed","false");b.onclick=()=>{sel.temp=sel.temp===v?"":v;syncChips()};$("temp").appendChild(b)});
+[["Tomorrow",1],["In 3 days",3],["Next week",7],["In 2 weeks",14]].forEach(([l,d])=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=l;b.onclick=()=>{const t=new Date();t.setDate(t.getDate()+d);$("nextDate").value=t.toISOString().slice(0,10)};$("quickDates").appendChild(b)});
+function syncChips(){[...$("interests").children].forEach(b=>b.setAttribute("aria-pressed",sel.interests.has(b.textContent)));[...$("temp").children].forEach(b=>b.setAttribute("aria-pressed",sel.temp===b.dataset.v))}
+
+function showTab(t){const cap=t==="capture";$("tabCapture").setAttribute("aria-selected",cap);$("tabLeads").setAttribute("aria-selected",!cap);$("panelCapture").hidden=!cap;$("panelLeads").hidden=cap;$("savebar").hidden=!cap;window.scrollTo(0,0);if(!cap)renderList()}
+$("tabCapture").onclick=()=>showTab("capture");$("tabLeads").onclick=()=>showTab("leads");
+
+function clearForm(){FIELDS.forEach(f=>$(f).value="");sel={interests:new Set(),temp:""};syncChips();scanned=false;$("dupNote").hidden=true;$("saveErr").hidden=true;$("scanStatus").hidden=true}
+$("clearBtn").onclick=clearForm;
+function dupCheck(){const em=$("email").value.trim().toLowerCase(),ph=$("phone").value.replace(/\D/g,"");const d=mine.find(l=>(em&&String(l.email||"").toLowerCase()===em)||(ph.length>6&&String(l.phone||"").replace(/\D/g,"")===ph));const n=$("dupNote");if(d){n.hidden=false;n.textContent="You already saved "+(d.name||"this person")+" ("+(d.company||"")+") earlier. Saving again creates a second entry."}else n.hidden=true}
+$("email").addEventListener("blur",dupCheck);$("phone").addEventListener("blur",dupCheck);
+
+// Airtable fields
+function toAirtable(l){
+  const f={"Full name":l.name,"Event":l.event,"Captured by":l.capturedBy,"Job title":l.title,"Company":l.company,"Email":l.email||undefined,"Mobile / phone":l.phone,"LinkedIn / website":l.linkedin,"Country":l.country||undefined,"Industry":l.industry||undefined,"Employees":l.headcount||undefined,"Current HRMS / payroll":l.currentSystem,"Decision role":l.role||undefined,"Modules of interest":l.interests.length?l.interests:undefined,"Other modules / requirements":l.otherModules,"Lead temperature":l.temp||undefined,"Next step":l.nextStep||undefined,"Buying timeline":l.timeline||undefined,"Notes":(l.notes||"")+(l.source==="Name card scan"?"\n[Captured with card scan]":"")};
+  if(l.nextDate){f["Next meeting"]=new Date(l.nextDate+"T"+(l.nextTime||"09:00")+":00+08:00").toISOString()}
+  Object.keys(f).forEach(k=>{if(f[k]===undefined||f[k]==="")delete f[k]});
+  return f;
+}
+async function send(lead){
+  const body=new URLSearchParams({json:JSON.stringify(toAirtable(lead)),id:lead.id});
+  const r=await fetch(SAVE_URL,{method:"POST",body});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  const t=await r.text();if(/error/i.test(t)&&!/ok/i.test(t))throw new Error(t.slice(0,120));
+}
+async function flush(){
+  if(!queue.length)return;
+  const still=[];
+  for(const lead of queue){try{await send(lead);const m=mine.find(x=>x.id===lead.id);if(m)m.sent=true}catch(e){still.push(lead)}}
+  queue=still;ls.set("hono_queue",queue);ls.set("hono_mine",mine);renderList();
+}
+$("saveBtn").onclick=async()=>{
+  const err=$("saveErr");err.hidden=true;
+  const ev=$("eventName").value.trim(),me=$("myName").value.trim();
+  if(!me){err.hidden=false;err.textContent="Type your own name at the top first, so we know who met this lead.";$("myName").focus();window.scrollTo(0,0);return}
+  if(!$("name").value.trim()||!$("company").value.trim()){err.hidden=false;err.textContent="Name and company are required.";return}
+  const lead={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),event:ev,capturedBy:me,interests:[...sel.interests],temp:sel.temp,source:scanned?"Name card scan":"Manual",createdAt:Date.now(),sent:false};
+  FIELDS.forEach(f=>lead[f]=$(f).value.trim());
+  mine.unshift(lead);ls.set("hono_mine",mine);
+  const btn=$("saveBtn");btn.disabled=true;btn.textContent="Saving…";
+  try{await send(lead);lead.sent=true;ls.set("hono_mine",mine);toast("Saved: "+lead.name)}
+  catch(e){queue.push(lead);ls.set("hono_queue",queue);toast("No signal. Kept on this phone and will send automatically.")}
+  finally{btn.disabled=false;btn.textContent="Save lead";clearForm();renderCount();window.scrollTo(0,0)}
+};
+
+// scan
+async function shrink(file){const img=await createImageBitmap(file);const s=Math.min(1,1400/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.8).split(",")[1]}
+async function handleCard(file){
+  const st=$("scanStatus");st.hidden=false;st.className="status";if(!file)return;
+  st.textContent="Reading the card… (about 5 seconds)";
+  try{
+    const b64=await shrink(file);
+    const r=await fetch(SCAN_URL,{method:"POST",body:new URLSearchParams({image:b64})});
+    const t=await r.text();
+    const m=t.match(/\{[\s\S]*\}/);if(!r.ok||!m)throw new Error("bad");
+    const d=JSON.parse(m[0]);let n=0;
+    ["name","title","company","email","phone","linkedin"].forEach(k=>{if(d[k]){$(k).value=d[k];n++}});
+    if(d.country&&[...$("country").options].some(o=>o.value===d.country)){$("country").value=d.country;n++}
+    if(n){st.className="status ok";st.textContent="Filled "+n+" fields from the card. Check them, add interest and next step, then save.";scanned=true;dupCheck()}
+    else{st.className="status err";st.textContent="Couldn't read details from that photo. Try again in better light, or type them in."}
+  }catch(e){st.className="status err";st.textContent="Couldn't read the card right now. Please type the details below."}
+}
+$("cardCam").onchange=e=>{handleCard(e.target.files[0]);e.target.value=""};
+$("cardFile").onchange=e=>{handleCard(e.target.files[0]);e.target.value=""};
+
+// list
+function fmtDate(d){if(!d)return"";return new Date(d+"T00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"})}
+function renderCount(){$("countBadge").textContent=mine.length}
+function renderList(){
+  renderCount();
+  const c={Hot:0,Warm:0,Cold:0};mine.forEach(l=>{if(c[l.temp]!=null)c[l.temp]++});
+  $("summary").innerHTML=`<span><b>${mine.length}</b> leads</span><span>·</span><span><b>${c.Hot}</b> hot</span><span><b>${c.Warm}</b> warm</span><span><b>${c.Cold}</b> cold</span>`;
+  const rb=$("retryBox");rb.hidden=!queue.length;$("retryText").textContent=queue.length+" lead(s) waiting to send.";
+  const list=$("list");
+  if(!mine.length){list.innerHTML='<div class="empty"><strong>No leads yet</strong>Leads you save on the Capture tab show up here.</div>';return}
+  list.innerHTML=mine.map(l=>`<div class="lead" data-t="${esc(l.temp)}" style="cursor:default"><span class="stripe"></span><span class="main"><div class="nm">${esc(l.name)}</div><div class="co">${esc([l.title,l.company].filter(Boolean).join(" · "))}</div><div class="meta">${(l.interests||[]).slice(0,3).map(i=>`<span class="pill">${esc(i)}</span>`).join("")}</div><div class="${l.sent?"okmark":"pending"}">${l.sent?"Saved to team list":"Waiting to send"}</div></span><span class="when">${l.nextDate?`<b>${esc(fmtDate(l.nextDate))}</b>${esc(l.nextStep||"Meeting")}`:esc(l.temp||"")}</span></div>`).join("");
+}
+$("retryBtn").onclick=flush;
+window.addEventListener("online",flush);
+setInterval(flush,30000);
+renderCount();flush();
+
+</script>
+</body></html>
