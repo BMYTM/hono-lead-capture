@@ -213,7 +213,7 @@ const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.par
 let sel={interests:new Set(),temp:""};let scanned=false;
 let mine=ls.get("hono_mine",[]);let queue=ls.get("hono_queue",[]);
 
-$("eventName").value=ls.get("hono_event","PMAP Tech HR 2026");
+const EVENT="PMAP Tech HR 2026";$("eventName").value=EVENT;$("eventName").readOnly=true;$("eventName").style.opacity=".75";try{localStorage.removeItem("hono_event")}catch(e){}
 $("myName").value=ls.get("hono_me","");
 $("eventName").addEventListener("input",e=>ls.set("hono_event",e.target.value.trim()));
 $("myName").addEventListener("input",e=>ls.set("hono_me",e.target.value.trim()));
@@ -255,8 +255,8 @@ async function flush(){
 }
 $("saveBtn").onclick=async()=>{
   const err=$("saveErr");err.hidden=true;
-  const ev=$("eventName").value.trim(),me=$("myName").value.trim();
-  if(!me){err.hidden=false;err.textContent="Type your own name at the top first, so we know who met this lead.";$("myName").focus();window.scrollTo(0,0);return}
+    const ev=EVENT,me=$("myName").value.trim();
+if(!me){err.hidden=false;err.textContent="Type your own name at the top first, so we know who met this lead.";$("myName").focus();window.scrollTo(0,0);return}
   if(!$("name").value.trim()||!$("company").value.trim()){err.hidden=false;err.textContent="Name and company are required.";return}
   const lead={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),event:ev,capturedBy:me,interests:[...sel.interests],temp:sel.temp,source:scanned?"Name card scan":"Manual",createdAt:Date.now(),sent:false};
   FIELDS.forEach(f=>lead[f]=$(f).value.trim());
