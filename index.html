@@ -213,7 +213,7 @@ const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.par
 let sel={interests:new Set(),temp:""};let scanned=false;
 let mine=ls.get("hono_mine",[]);let queue=ls.get("hono_queue",[]);
 
-const EVENT="PMAP Tech HR 2026";$("eventName").value=EVENT;$("eventName").readOnly=true;$("eventName").style.opacity=".75";try{localStorage.removeItem("hono_event")}catch(e){}
+const EVENT="PMAP Tech HR 2026";$("eventName").value=EVENT;$("eventName").readOnly=true;$("eventName").style.opacity=".75";try{localStorage.removeItem("hono_event")}catch(e){}$("country").value="Philippines";
 $("myName").value=ls.get("hono_me","");
 $("eventName").addEventListener("input",e=>ls.set("hono_event",e.target.value.trim()));
 $("myName").addEventListener("input",e=>ls.set("hono_me",e.target.value.trim()));
@@ -229,14 +229,14 @@ function syncChips(){[...$("interests").children].forEach(b=>b.setAttribute("ari
 function showTab(t){const cap=t==="capture";$("tabCapture").setAttribute("aria-selected",cap);$("tabLeads").setAttribute("aria-selected",!cap);$("panelCapture").hidden=!cap;$("panelLeads").hidden=cap;$("savebar").hidden=!cap;window.scrollTo(0,0);if(!cap)renderList()}
 $("tabCapture").onclick=()=>showTab("capture");$("tabLeads").onclick=()=>showTab("leads");
 
-function clearForm(){FIELDS.forEach(f=>$(f).value="");sel={interests:new Set(),temp:""};syncChips();scanned=false;$("dupNote").hidden=true;$("saveErr").hidden=true;$("scanStatus").hidden=true}
+function clearForm(){FIELDS.forEach(f=>$(f).value="");$("country").value="Philippines";sel={interests:new Set(),temp:""};syncChips();scanned=false;$("dupNote").hidden=true;$("saveErr").hidden=true;$("scanStatus").hidden=true}
 $("clearBtn").onclick=clearForm;
 function dupCheck(){const em=$("email").value.trim().toLowerCase(),ph=$("phone").value.replace(/\D/g,"");const d=mine.find(l=>(em&&String(l.email||"").toLowerCase()===em)||(ph.length>6&&String(l.phone||"").replace(/\D/g,"")===ph));const n=$("dupNote");if(d){n.hidden=false;n.textContent="You already saved "+(d.name||"this person")+" ("+(d.company||"")+") earlier. Saving again creates a second entry."}else n.hidden=true}
 $("email").addEventListener("blur",dupCheck);$("phone").addEventListener("blur",dupCheck);
 
 // Airtable fields
 function toAirtable(l){
-  const f={"Full name":l.name,"Event":EVENT,"Captured by":l.capturedBy,"Job title":l.title,"Company":l.company,"Email":l.email||undefined,"Mobile / phone":l.phone,"Office phone":l.office,"LinkedIn / website":l.linkedin,"Country":l.country||undefined,"Industry":l.industry||undefined,"Employees":l.headcount||undefined,"Current HRMS / payroll":l.currentSystem,"Decision role":l.role||undefined,"Modules of interest":l.interests.length?l.interests:undefined,"Other modules / requirements":l.otherModules,"Lead temperature":l.temp||undefined,"Next step":l.nextStep||undefined,"Buying timeline":l.timeline||undefined,"Notes":(l.notes||"")+(l.source==="Name card scan"?"\n[Captured with card scan]":"")};
+  const f={"Full name":l.name,"Event":EVENT,"Captured by":l.capturedBy,"Job title":l.title,"Company":l.company,"Email":l.email||undefined,"Mobile / phone":l.phone,"Office phone":l.office,"LinkedIn / website":l.linkedin,"Country":l.country||"Philippines","Industry":l.industry||undefined,"Employees":l.headcount||undefined,"Current HRMS / payroll":l.currentSystem,"Decision role":l.role||undefined,"Modules of interest":l.interests.length?l.interests:undefined,"Other modules / requirements":l.otherModules,"Lead temperature":l.temp||undefined,"Next step":l.nextStep||undefined,"Buying timeline":l.timeline||undefined,"Notes":(l.notes||"")+(l.source==="Name card scan"?"\n[Captured with card scan]":"")};
   if(l.nextDate){f["Next meeting"]=new Date(l.nextDate+"T"+(l.nextTime||"09:00")+":00+08:00").toISOString()}
   Object.keys(f).forEach(k=>{if(f[k]===undefined||f[k]==="")delete f[k]});
   return f;
