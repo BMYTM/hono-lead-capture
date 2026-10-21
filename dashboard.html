@@ -5,52 +5,82 @@
 <meta name="theme-color" content="#360B62">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-:root{--bg:#F6F4FA;--surface:#fff;--ink:#222;--muted:#5F5873;--line:#E1D9F0;--accent:#4B2E83;--accent-soft:#F0EAFA;--magenta:#C0398A;--brand:#360B62;--hot:#C8331B;--warm:#B26A00;--cold:#3B6E8F;--none:#B9B2C9;--f:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--m:"IBM Plex Mono",ui-monospace,Menlo,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#14101E;--surface:#1E1830;--ink:#EEEAF6;--muted:#A79FBD;--line:#352C4D;--accent:#B89CF0;--accent-soft:#2D2348;--magenta:#E77BBF;--brand:#DCCDF7;--hot:#FF8A73;--warm:#F2B455;--cold:#8CC4E6;--none:#5A5172;color-scheme:dark}}
+:root{--bg:#F6F4FA;--surface:#fff;--ink:#222;--muted:#5F5873;--line:#E1D9F0;--accent:#4B2E83;--accent-soft:#F0EAFA;--magenta:#C0398A;--brand:#360B62;--hot:#C8331B;--warm:#B26A00;--cold:#3B6E8F;--none:#B9B2C9;--up:#1E7A4C;--f:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--m:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#14101E;--surface:#1E1830;--ink:#EEEAF6;--muted:#A79FBD;--line:#352C4D;--accent:#B89CF0;--accent-soft:#2D2348;--magenta:#E77BBF;--brand:#DCCDF7;--hot:#FF8A73;--warm:#F2B455;--cold:#8CC4E6;--none:#5A5172;--up:#6FD39E;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--f);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
-header{background:var(--surface);border-bottom:1px solid var(--line)}
-header .wrap{padding-block:14px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+header{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header .wrap{padding-block:12px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .logo{display:flex;align-items:center;gap:10px;min-width:0}.logo svg{color:var(--brand);flex:none}
 .logo .t{font:600 15px var(--f);padding-left:10px;border-left:1px solid var(--line)}
 .logo .t small{display:block;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .grad{height:3px;background:linear-gradient(90deg,var(--accent),var(--magenta))}
 .upd{display:flex;align-items:center;gap:10px;font:500 12px var(--m);color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:#2E9E5B;display:inline-block;margin-right:6px}
-.dot.stale{background:var(--warm)}
-button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;font:600 13px var(--f);cursor:pointer}
-button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
-@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.kpis .k:first-child{grid-column:1/-1}}
-.k{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.dot{width:8px;height:8px;border-radius:50%;background:#2E9E5B;display:inline-block;margin-right:6px}.dot.stale{background:var(--warm)}
+button,.tab{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;font:600 13px var(--f);cursor:pointer}
+button:focus-visible,.tab:focus-visible,input:focus-visible,.clk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:8px 14px}
+.tab small{display:block;font:500 11px var(--m);color:var(--muted)}
+.tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab[aria-pressed="true"] small{color:#fff;opacity:.85}
+.search{flex:1 1 220px;min-width:0}
+.search input{width:100%;font:15px var(--f);padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;min-height:0}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 12px var(--f);background:var(--accent-soft);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:4px 6px 4px 10px}
+.chip b{font-weight:600}
+.chip button{border:0;background:none;padding:0 4px;font-size:14px;line-height:1;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:14px}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.k{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:left;font:inherit;color:inherit;width:100%}
+.k.clk{cursor:pointer}.k.clk:hover{border-color:var(--accent)}
+.k[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .k .l{font:500 11px var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.k .v{font:700 34px/1.1 var(--f);font-variant-numeric:tabular-nums;margin-top:4px}
+.k .v{font:700 32px/1.1 var(--f);font-variant-numeric:tabular-nums;margin-top:4px}
 .k.hot .v{color:var(--hot)}.k.warm .v{color:var(--warm)}.k.cold .v{color:var(--cold)}.k.full .v{color:var(--magenta)}
-.k .s{font-size:12px;color:var(--muted)}
-.tempbar{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--line);margin-top:10px}
-.tempbar span{display:block;height:100%}
-.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.k .s{font-size:12px;color:var(--muted);margin-top:2px}
+.delta{font:600 12px var(--m)}.delta.up{color:var(--up)}.delta.down{color:var(--hot)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.grid.two{grid-template-columns:2fr 1fr}
+@media (max-width:900px){.grid,.grid.two{grid-template-columns:1fr}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
-h2{font:600 14px var(--f);margin:0 0 12px}
-.bars{display:flex;flex-direction:column;gap:8px}
-.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:13px}
+h2{font:600 14px var(--f);margin:0 0 4px}
+.hint{font-size:12px;color:var(--muted);margin:0 0 12px}
+.bars{display:flex;flex-direction:column;gap:4px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;font-size:13px;text-align:left;width:100%;background:none;border:0;border-radius:8px;padding:5px 6px;color:inherit;font-family:inherit;cursor:pointer}
+.bar:hover{background:var(--accent-soft)}
+.bar[aria-pressed="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .bar .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar .c{font:500 12px var(--m);font-variant-numeric:tabular-nums;color:var(--muted)}
 .bar .track{grid-column:1/-1;height:6px;border-radius:99px;background:var(--accent-soft)}
-.bar .fill{height:100%;border-radius:99px;background:var(--accent)}
+.bar .fill{display:block;height:100%;border-radius:99px;background:var(--accent)}
 .bar.full .fill{background:var(--magenta)}
-.tablewrap{overflow-x:auto;margin-top:12px}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
-th{text-align:left;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+.more{margin-top:6px;font:600 12px var(--f);color:var(--accent);background:none;border:0;padding:4px 6px}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:500 11px var(--m)}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ready{display:flex;flex-direction:column;gap:12px}
+.ready .row{display:flex;justify-content:space-between;font-size:13px}
+.meter{height:8px;border-radius:99px;background:var(--accent-soft);overflow:hidden;margin-top:4px}
+.meter span{display:block;height:100%;background:var(--accent)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:700px}
+th{text-align:left;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.lr{cursor:pointer}tr.lr:hover td{background:var(--accent-soft)}
+tr.det td{background:var(--accent-soft);font-size:12px;color:var(--muted)}
+tr.det b{color:var(--ink);font-weight:600}
 td.t{font:500 12px var(--m);color:var(--muted);white-space:nowrap}
 .pill{display:inline-block;font:600 11px var(--f);padding:2px 8px;border-radius:99px;color:#fff;background:var(--none)}
 .pill.Hot{background:var(--hot)}.pill.Warm{background:var(--warm)}.pill.Cold{background:var(--cold)}
-.muted{color:var(--muted)}
-.empty{color:var(--muted);font-size:13px}
+.muted{color:var(--muted)}.empty{color:var(--muted);font-size:13px;padding:8px 6px}
 .err{margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-size:13px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--muted)}
 </style>
 </head><body>
 <header>
@@ -62,59 +92,152 @@ td.t{font:500 12px var(--m);color:var(--muted);white-space:nowrap}
 </header>
 <main class="wrap">
   <div class="err" id="err" hidden></div>
+  <div class="controls">
+    <div class="tabs" id="days"></div>
+    <div class="search"><input id="q" type="search" placeholder="Search name, company, title" aria-label="Search leads"></div>
+  </div>
+  <div class="chips" id="chips"></div>
+
   <section class="kpis">
-    <div class="k"><div class="l">Total leads</div><div class="v" id="kTotal">–</div><div class="s" id="kToday">&nbsp;</div><div class="tempbar" id="tempbar"></div></div>
-    <div class="k hot"><div class="l">Hot</div><div class="v" id="kHot">–</div><div class="s" id="pHot">&nbsp;</div></div>
-    <div class="k warm"><div class="l">Warm</div><div class="v" id="kWarm">–</div><div class="s" id="pWarm">&nbsp;</div></div>
-    <div class="k cold"><div class="l">Cold</div><div class="v" id="kCold">–</div><div class="s" id="pCold">&nbsp;</div></div>
-    <div class="k full"><div class="l">Full suite interest</div><div class="v" id="kFull">–</div><div class="s" id="pFull">&nbsp;</div></div>
+    <div class="k"><div class="l">Leads</div><div class="v" id="kTotal">–</div><div class="s" id="sTotal">&nbsp;</div></div>
+    <button class="k clk hot" data-f="temp" data-v="Hot" aria-pressed="false"><div class="l">Hot</div><div class="v" id="kHot">–</div><div class="s" id="sHot">&nbsp;</div></button>
+    <button class="k clk warm" data-f="temp" data-v="Warm" aria-pressed="false"><div class="l">Warm</div><div class="v" id="kWarm">–</div><div class="s" id="sWarm">&nbsp;</div></button>
+    <button class="k clk cold" data-f="temp" data-v="Cold" aria-pressed="false"><div class="l">Cold</div><div class="v" id="kCold">–</div><div class="s" id="sCold">&nbsp;</div></button>
+    <button class="k clk full" data-f="mod" data-v="Full suite (all modules)" aria-pressed="false"><div class="l">Full suite</div><div class="v" id="kFull">–</div><div class="s" id="sFull">&nbsp;</div></button>
+    <button class="k clk" data-f="step" data-v="Product demo|Discovery meeting|Send proposal" aria-pressed="false"><div class="l">Meetings / demos</div><div class="v" id="kMeet">–</div><div class="s" id="sMeet">&nbsp;</div></button>
+  </section>
+
+  <section class="grid two">
+    <div class="card"><h2 id="chartTitle">Leads per hour</h2><p class="hint" id="chartHint">Manila time</p><svg class="chart" id="chart" viewBox="0 0 640 220" role="img" aria-label="Lead activity chart"></svg><div class="legend"><span><i style="background:var(--hot)"></i>Hot</span><span><i style="background:var(--warm)"></i>Warm</span><span><i style="background:var(--cold)"></i>Cold</span><span><i style="background:var(--none)"></i>Not rated</span></div></div>
+    <div class="card"><h2>Follow-up readiness</h2><p class="hint">Share of leads the team can act on</p><div class="ready" id="ready"></div></div>
+  </section>
+
+  <section class="grid">
+    <div class="card"><h2>Leads by team member</h2><p class="hint">Tap a name to filter</p><div class="bars" id="byMember"></div></div>
+    <div class="card"><h2>Modules of interest</h2><p class="hint">Tap a module to filter</p><div class="bars" id="byModule"></div></div>
+    <div class="card"><h2>Next step</h2><p class="hint">Tap to filter</p><div class="bars" id="byStep"></div></div>
   </section>
   <section class="grid">
-    <div class="card"><h2>Leads by team member</h2><div class="bars" id="byMember"></div></div>
-    <div class="card"><h2>Modules of interest</h2><div class="bars" id="byModule"></div></div>
-    <div class="card"><h2>Next step</h2><div class="bars" id="byStep"></div></div>
+    <div class="card"><h2>Industry</h2><p class="hint">Tap to filter</p><div class="bars" id="byInd"></div></div>
+    <div class="card"><h2>Country</h2><p class="hint">Tap to filter</p><div class="bars" id="byCountry"></div></div>
+    <div class="card"><h2>Top companies</h2><p class="hint">Several contacts from one company</p><div class="bars" id="byCompany"></div></div>
   </section>
+
   <section class="card" style="margin-top:12px">
-    <h2>Latest leads</h2>
-    <div class="tablewrap"><table><thead><tr><th>Time</th><th>Name</th><th>Company</th><th>Job title</th><th>Temp</th><th>Next step</th><th>Captured by</th></tr></thead><tbody id="latest"><tr><td colspan="7" class="empty">Loading the latest leads…</td></tr></tbody></table></div>
+    <h2>Leads</h2><p class="hint" id="tableHint">Newest first · tap a row for details</p>
+    <div class="tablewrap"><table><thead><tr><th>Time</th><th>Name</th><th>Company</th><th>Job title</th><th>Temp</th><th>Next step</th><th>Captured by</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="empty">Loading leads…</td></tr></tbody></table></div>
+    <div class="foot"><span id="shown"></span><button id="showMore" hidden>Show more</button></div>
   </section>
 </main>
 <script>
 const URL_="https://hook.us2.make.com/kr28h8newwmahxum5wztqautv4o2wjvo";
 const EVERY=120000;
+const DAYS=[["2026-10-21","Day 1","Wed 21 Oct"],["2026-10-22","Day 2","Thu 22 Oct"],["2026-10-23","Day 3","Fri 23 Oct"]];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const tz={timeZone:"Asia/Manila"};
-let last=0,timer=null,busy=false;
-function parse(t){return t.split("\n").filter(x=>x.trim()).map(r=>{const c=r.split("\t");return{name:c[0],company:c[1],title:c[2],by:(c[3]||"").trim(),temp:c[4]||"",step:c[5]||"",mods:(c[6]||"").split(";").map(s=>s.trim()).filter(Boolean),at:c[7]?new Date(c[7]):null}})}
-function count(arr){const m=new Map();arr.forEach(k=>{if(!k)return;m.set(k,(m.get(k)||0)+1)});return[...m.entries()].sort((a,b)=>b[1]-a[1])}
-function bars(el,entries,max,limit){if(!entries.length){el.innerHTML='<div class="empty">No data yet</div>';return}const top=entries.slice(0,limit||8);const mx=max||top[0][1];el.innerHTML=top.map(([n,c])=>`<div class="bar${/^Full suite/.test(n)?" full":""}"><span class="n">${esc(n)}</span><span class="c">${c}</span><span class="track"><span class="fill" style="display:block;width:${Math.max(4,Math.round(c/mx*100))}%"></span></span></div>`).join("")}
-function pct(n,t){return t?Math.round(n/t*100)+"% of leads":" "}
-function render(L){
-  const T=L.length;$("kTotal").textContent=T;
-  const today=new Date().toLocaleDateString("en-CA",tz);const nToday=L.filter(l=>l.at&&l.at.toLocaleDateString("en-CA",tz)===today).length;
-  const lastHour=L.filter(l=>l.at&&Date.now()-l.at<3600000).length;
-  $("kToday").textContent=nToday+" today · "+lastHour+" in the last hour";
-  const h=L.filter(l=>l.temp==="Hot").length,w=L.filter(l=>l.temp==="Warm").length,c=L.filter(l=>l.temp==="Cold").length,u=T-h-w-c;
-  $("kHot").textContent=h;$("kWarm").textContent=w;$("kCold").textContent=c;
-  $("pHot").textContent=pct(h,T);$("pWarm").textContent=pct(w,T);$("pCold").textContent=u?u+" not rated":pct(c,T);
-  $("tempbar").innerHTML=T?[[h,"var(--hot)"],[w,"var(--warm)"],[c,"var(--cold)"],[u,"var(--none)"]].map(([n,col])=>n?`<span style="width:${n/T*100}%;background:${col}"></span>`:"").join(""):"";
-  const f=L.filter(l=>l.mods.some(m=>/^Full suite/.test(m))).length;$("kFull").textContent=f;$("pFull").textContent=pct(f,T);
-  bars($("byMember"),count(L.map(l=>l.by?l.by.replace(/\b\w/g,s=>s.toUpperCase()):"")),0,10);
-  bars($("byModule"),count(L.flatMap(l=>l.mods)),0,10);
-  bars($("byStep"),count(L.map(l=>l.step||"Not set")),0,8);
-  $("latest").innerHTML=L.length?L.slice(0,10).map(l=>`<tr><td class="t">${l.at?esc(l.at.toLocaleTimeString("en-PH",{...tz,hour:"numeric",minute:"2-digit"})):""}</td><td>${esc(l.name)}</td><td>${esc(l.company)}</td><td class="muted">${esc(l.title)}</td><td>${l.temp?`<span class="pill ${esc(l.temp)}">${esc(l.temp)}</span>`:'<span class="muted">–</span>'}</td><td>${esc(l.step)}</td><td class="muted">${esc(l.by)}</td></tr>`).join(""):'<tr><td colspan="7" class="empty">No leads yet. They appear here as the booth team saves them.</td></tr>';
+const TZ="Asia/Manila";
+const dayOf=d=>d.toLocaleDateString("en-CA",{timeZone:TZ});
+const hourOf=d=>+d.toLocaleString("en-GB",{timeZone:TZ,hour:"2-digit",hour12:false});
+const titleCase=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
+let ALL=[],last=0,busy=false,limit=25,open=new Set();
+const st={day:"all",q:"",f:{}};
+try{const s=JSON.parse(sessionStorage.getItem("pmapdash")||"null");if(s){st.day=s.day||"all";st.f=s.f||{}}}catch(e){}
+function save(){try{sessionStorage.setItem("pmapdash",JSON.stringify({day:st.day,f:st.f}))}catch(e){}}
+
+function parse(t){return t.split("\n").filter(x=>x.trim()).map((r,i)=>{const c=r.split("\t");const at=c[7]?new Date(c[7]):null;return{id:i+"|"+(c[7]||""),name:c[0]||"",company:(c[1]||"").trim(),title:c[2]||"",by:titleCase((c[3]||"").trim().toLowerCase()),temp:c[4]||"",step:c[5]||"",mods:(c[6]||"").split(";").map(s=>s.trim()).filter(Boolean),at,country:c[8]||"",ind:c[9]||"",day:at?dayOf(at):""}})}
+const FIELDS={temp:{label:"Temp",get:l=>l.temp||"Not rated"},by:{label:"Team member",get:l=>l.by||"—"},mod:{label:"Module",get:l=>l.mods},step:{label:"Next step",get:l=>l.step||"Not set"},ind:{label:"Industry",get:l=>l.ind||"Not set"},country:{label:"Country",get:l=>l.country||"Not set"},company:{label:"Company",get:l=>l.company}};
+function match(l,skip){
+  if(st.day!=="all"&&l.day!==st.day)return false;
+  if(st.q){const q=st.q.toLowerCase();if(![l.name,l.company,l.title,l.by].join(" ").toLowerCase().includes(q))return false}
+  for(const k in st.f){if(k===skip)continue;const want=st.f[k].split("|");const v=FIELDS[k].get(l);if(Array.isArray(v)?!v.some(x=>want.includes(x)):!want.includes(v))return false}
+  return true;
+}
+function count(list,fn){const m=new Map();list.forEach(l=>{const v=fn(l);(Array.isArray(v)?v:[v]).forEach(k=>{if(!k)return;m.set(k,(m.get(k)||0)+1)})});return[...m.entries()].sort((a,b)=>b[1]-a[1])}
+function setF(k,v){if(st.f[k]===v)delete st.f[k];else st.f[k]=v;limit=25;save();render()}
+
+function bars(el,key,list,max){
+  const entries=count(list,FIELDS[key].get).filter(e=>key!=="company"||e[1]>1);
+  if(!entries.length){el.innerHTML='<div class="empty">'+(key==="company"?"No company with more than one contact yet":"No leads match")+'</div>';return}
+  const exp=el.dataset.exp==="1";const n=exp?entries.length:(max||7);const top=entries.slice(0,n);const mx=entries[0][1];
+  el.innerHTML=top.map(([name,c])=>`<button class="bar${/^Full suite/.test(name)?" full":""}" data-k="${key}" data-v="${esc(name)}" aria-pressed="${st.f[key]===name}"><span class="n">${esc(name)}</span><span class="c">${c}</span><span class="track"><span class="fill" style="width:${Math.max(4,Math.round(c/mx*100))}%"></span></span></button>`).join("")+(entries.length>(max||7)?`<button class="more" data-more="1">${exp?"Show less":"Show all "+entries.length}</button>`:"");
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".bar");if(b){setF(b.dataset.k,b.dataset.v);return}
+  const m=e.target.closest("[data-more]");if(m){const box=m.parentElement;box.dataset.exp=box.dataset.exp==="1"?"":"1";render();return}
+  const k=e.target.closest(".k.clk");if(k){setF(k.dataset.f,k.dataset.v);return}
+  const c=e.target.closest("[data-rm]");if(c){delete st.f[c.dataset.rm];save();render();return}
+  const t=e.target.closest(".tab");if(t){st.day=t.dataset.day;limit=25;save();render();return}
+  const r=e.target.closest("tr.lr");if(r){const id=r.dataset.id;open.has(id)?open.delete(id):open.add(id);renderRows(currentList);return}
+});
+$("q").addEventListener("input",e=>{st.q=e.target.value.trim();limit=25;render()});
+$("showMore").onclick=()=>{limit+=25;renderRows(currentList)};
+
+function renderDays(){
+  const n=d=>ALL.filter(l=>l.day===d).length;
+  $("days").innerHTML=[["all","All days",ALL.length+" leads"]].concat(DAYS.map(([d,a,b])=>[d,a,b+" · "+n(d)])).map(([d,a,b])=>`<button class="tab" data-day="${d}" aria-pressed="${st.day===d}">${a}<small>${esc(b)}</small></button>`).join("");
+}
+function renderChips(){
+  const ks=Object.keys(st.f);
+  $("chips").innerHTML=ks.map(k=>`<span class="chip">${FIELDS[k].label}: <b>${esc(st.f[k].split("|").join(" / "))}</b><button data-rm="${k}" aria-label="Remove filter">×</button></span>`).join("")+(ks.length>1?`<span class="chip" style="padding-right:10px;cursor:pointer" onclick="st.f={};save();render()">Clear all</span>`:"");
+}
+function pct(n,t){return t?Math.round(n/t*100)+"%":"0%"}
+function deltaTxt(cur,prev){if(prev==null)return"";const d=cur-prev;if(!d)return' <span class="delta">= prev day</span>';return` <span class="delta ${d>0?"up":"down"}">${d>0?"+":""}${d} vs prev day</span>`}
+function prevDayList(){const i=DAYS.findIndex(d=>d[0]===st.day);if(i<1)return null;const keep=st.day;st.day=DAYS[i-1][0];const p=ALL.filter(l=>match(l));st.day=keep;return p}
+
+let currentList=[];
+function render(){
+  renderDays();renderChips();
+  const L=ALL.filter(l=>match(l));currentList=L;const P=prevDayList();
+  const T=L.length;
+  const cnt=(arr,fn)=>arr?arr.filter(fn).length:null;
+  const isH=l=>l.temp==="Hot",isW=l=>l.temp==="Warm",isC=l=>l.temp==="Cold",isF=l=>l.mods.includes("Full suite (all modules)"),isM=l=>/Product demo|Discovery meeting|Send proposal/.test(l.step);
+  $("kTotal").textContent=T;
+  const hourAgo=L.filter(l=>l.at&&Date.now()-l.at<3600000).length;
+  $("sTotal").innerHTML=(P?deltaTxt(T,P.length).trim():"")||(hourAgo+" in the last hour");
+  [["Hot",isH],["Warm",isW],["Cold",isC],["Full",isF],["Meet",isM]].forEach(([k,fn])=>{const v=cnt(L,fn);$("k"+k).textContent=v;$("s"+k).innerHTML=pct(v,T)+" of leads"+(P?deltaTxt(v,cnt(P,fn)):"")});
+  document.querySelectorAll(".k.clk").forEach(b=>b.setAttribute("aria-pressed",st.f[b.dataset.f]===b.dataset.v));
+  // charts
+  chart(L);
+  // readiness
+  const rated=L.filter(l=>l.temp).length,stepped=L.filter(l=>l.step).length,modded=L.filter(l=>l.mods.length).length;
+  $("ready").innerHTML=[["Temperature rated",rated],["Next step set",stepped],["Modules captured",modded]].map(([n,v])=>`<div><div class="row"><span>${n}</span><span class="muted">${v} of ${T} · ${pct(v,T)}</span></div><div class="meter"><span style="width:${T?v/T*100:0}%"></span></div></div>`).join("")+(T-stepped?`<div class="muted" style="font-size:12px">${T-stepped} lead${T-stepped>1?"s":""} without a next step. Tap “Not set” under Next step to see them.</div>`:"");
+  // bars (each list ignores its own filter so you can switch values)
+  const rest=k=>ALL.filter(l=>match(l,k));
+  bars($("byMember"),"by",rest("by"),8);bars($("byModule"),"mod",rest("mod"),8);bars($("byStep"),"step",rest("step"),7);
+  bars($("byInd"),"ind",rest("ind"),6);bars($("byCountry"),"country",rest("country"),6);bars($("byCompany"),"company",rest("company"),6);
+  renderRows(L);
+}
+function renderRows(L){
+  const rows=L.slice(0,limit);
+  $("rows").innerHTML=rows.length?rows.map(l=>{const o=open.has(l.id);const time=l.at?l.at.toLocaleString("en-PH",{timeZone:TZ,weekday:st.day==="all"?"short":undefined,hour:"numeric",minute:"2-digit"}):"";return`<tr class="lr" data-id="${esc(l.id)}" aria-expanded="${o}"><td class="t">${esc(time)}</td><td>${esc(l.name)}</td><td>${esc(l.company)}</td><td class="muted">${esc(l.title)}</td><td>${l.temp?`<span class="pill ${esc(l.temp)}">${esc(l.temp)}</span>`:'<span class="muted">–</span>'}</td><td>${esc(l.step)||'<span class="muted">–</span>'}</td><td class="muted">${esc(l.by)}</td></tr>`+(o?`<tr class="det"><td></td><td colspan="6"><b>Modules:</b> ${esc(l.mods.join(", ")||"–")} &nbsp;·&nbsp; <b>Industry:</b> ${esc(l.ind||"–")} &nbsp;·&nbsp; <b>Country:</b> ${esc(l.country||"–")}</td></tr>`:"")}).join(""):'<tr><td colspan="7" class="empty">No leads match these filters.</td></tr>';
+  $("shown").textContent=L.length?`Showing ${rows.length} of ${L.length}`:"";
+  $("showMore").hidden=L.length<=limit;
+}
+function chart(L){
+  const svg=$("chart"),W=640,H=220,pl=30,pr=8,pt=10,pb=28;
+  const T=["Hot","Warm","Cold",""],col={Hot:"var(--hot)",Warm:"var(--warm)",Cold:"var(--cold)","":"var(--none)"};
+  let buckets,labels,title,hint;
+  if(st.day==="all"){buckets=DAYS.map(([d])=>L.filter(l=>l.day===d));labels=DAYS.map(d=>d[1]+" · "+d[2].slice(4));title="Leads per day";hint="All three event days, by temperature"}
+  else{const hs=[];for(let h=8;h<=19;h++)hs.push(h);buckets=hs.map(h=>L.filter(l=>l.at&&hourOf(l.at)===h));labels=hs.map(h=>(h>12?h-12:h)+(h>=12?"p":"a"));title="Leads per hour";hint=(DAYS.find(d=>d[0]===st.day)||["","",""])[2]+" · Manila time, 8 am to 7 pm"}
+  $("chartTitle").textContent=title;$("chartHint").textContent=hint;
+  const mx=Math.max(1,...buckets.map(b=>b.length));const step=mx<=5?1:mx<=10?2:mx<=25?5:mx<=60?10:25;const top=Math.ceil(mx/step)*step;
+  const iw=W-pl-pr,ih=H-pt-pb,bw=iw/buckets.length,gap=Math.min(14,bw*.25);
+  let g="";for(let v=0;v<=top;v+=step){const y=pt+ih-ih*v/top;g+=`<line class="gl" x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${v}</text>`}
+  buckets.forEach((b,i)=>{let y=pt+ih;const x=pl+i*bw+gap/2,w=bw-gap;T.forEach(t=>{const n=b.filter(l=>(l.temp||"")===t).length;if(!n)return;const h=ih*n/top;y-=h;g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${col[t]}"><title>${labels[i]}: ${n} ${t||"not rated"}</title></rect>`});if(b.length)g+=`<text x="${x+w/2}" y="${y-4}" text-anchor="middle" style="fill:var(--ink)">${b.length}</text>`;g+=`<text x="${x+w/2}" y="${H-8}" text-anchor="middle">${labels[i]}</text>`});
+  svg.innerHTML=g;
 }
 async function load(){
   if(busy)return;busy=true;$("refresh").disabled=true;
-  try{const r=await fetch(URL_,{method:"POST",body:new URLSearchParams({v:"1"}),cache:"no-store"});if(!r.ok)throw new Error(r.status);const L=parse(await r.text());L.sort((a,b)=>(b.at||0)-(a.at||0));render(L);last=Date.now();$("err").hidden=true;stamp()}
+  try{const r=await fetch(URL_,{method:"POST",body:new URLSearchParams({v:"2"}),cache:"no-store"});if(!r.ok)throw new Error(r.status);ALL=parse(await r.text());ALL.sort((a,b)=>(b.at||0)-(a.at||0));
+    if(st.day==="all"&&!sessionStorage.getItem("pmapdash")){const today=dayOf(new Date());if(DAYS.some(d=>d[0]===today))st.day="all"}
+    render();last=Date.now();$("err").hidden=true;stamp()}
   catch(e){$("err").hidden=false;$("err").textContent="Couldn't reach the lead data just now. It will try again automatically.";$("dot").className="dot stale"}
   finally{busy=false;$("refresh").disabled=false}
 }
-function stamp(){if(!last)return;const m=Math.floor((Date.now()-last)/60000);$("updated").textContent="Updated "+new Date(last).toLocaleTimeString("en-PH",{...tz,hour:"numeric",minute:"2-digit"})+(m?" · "+m+" min ago":"");$("dot").className="dot"+(m>=5?" stale":"")}
-function schedule(){clearInterval(timer);timer=setInterval(()=>{if(document.visibilityState==="visible")load()},EVERY)}
+function stamp(){if(!last)return;const m=Math.floor((Date.now()-last)/60000);$("updated").textContent="Updated "+new Date(last).toLocaleTimeString("en-PH",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+(m?" · "+m+" min ago":"");$("dot").className="dot"+(m>=5?" stale":"")}
+setInterval(()=>{if(document.visibilityState==="visible")load()},EVERY);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-last>EVERY)load()});
 $("refresh").onclick=load;setInterval(stamp,30000);
-load();schedule();
+load();
 </script>
 </body></html>
